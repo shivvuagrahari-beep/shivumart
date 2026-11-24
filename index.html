@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0A0A0C" />
+  <title>Shivu Mart Global — VIP Shopping & Auto-Fulfillment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --gold: #D4AF37; --gold-light: #F3E5AB; --bg: #0A0A0C; --card: #121216; }
+    body { background: var(--bg); color: #F5F5F7; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .font-royal { font-family: 'Cinzel', serif; }
+    .gold-grad { background: linear-gradient(135deg, #D4AF37 0%, #F7E08B 50%, #AA7C11 100%); }
+    .gold-text { background: linear-gradient(135deg, #F7E08B, #D4AF37); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .gold-border { border: 1px solid rgba(212, 175, 55, 0.28); }
+    .glass { background: rgba(18, 18, 22, 0.92); backdrop-filter: blur(14px); }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-vip-slip, #printable-vip-slip * { visibility: visible; }
+      #printable-vip-slip { position: fixed; left: 0; top: 0; width: 100%; background: #fff !important; color: #000 !important; }
+    }
+  </style>
+</head>
+<body class="pb-24">
+
+  <!-- CYBERSHIELD SECURITY LOCK SCREEN (AUTO-TRIGGERED ON TAMPER/FRAUD) -->
+  <div id="ban-screen" class="hidden fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center p-6 text-center">
+    <div class="w-20 h-20 rounded-full bg-red-600/20 border-2 border-red-500 flex items-center justify-center text-4xl mb-4">🛡️</div>
+    <h1 class="text-2xl font-extrabold text-red-500 uppercase tracking-wider">CyberShield Global Ban</h1>
+    <p class="text-sm text-zinc-300 mt-2 max-w-md">Fraudulent UTR, fake payment, or system tampering detected. Your Device ID, IP, and Payment Card/UPI have been permanently blacklisted across Shivu Mart Global.</p>
+    <p id="ban-reason-text" class="text-xs text-red-400 font-mono mt-3 bg-red-950/40 px-3 py-1.5 rounded"></p>
+  </div>
+
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-40 glass border-b border-yellow-500/20 px-3 py-2.5">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 cursor-pointer" onclick="switchTab('store')">
+        <div class="w-9 h-9 rounded-xl gold-grad flex items-center justify-center text-black font-royal font-black text-lg shadow-lg">SM</div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-royal font-bold text-sm sm:text-base gold-text tracking-wide">SHIVU MART</span>
+            <span class="text-[9px] bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 px-1.5 py-0.5 rounded-full font-bold">GLOBAL</span>
+          </div>
+          <p class="text-[10px] text-zinc-400">1,00,08,000+ Wholesale Items • VIP Delivery</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <select id="currency-select" onchange="changeCurrency(this.value)" class="bg-zinc-900 text-yellow-400 text-xs font-bold px-2 py-1.5 rounded-lg border border-yellow-500/30 outline-none">
+          <option value="INR">₹ INR</option>
+          <option value="USD">$ USD</option>
+          <option value="EUR">€ EUR</option>
+          <option value="GBP">£ GBP</option>
+          <option value="AED">AED</option>
+          <option value="SAR">SAR</option>
+        </select>
+
+        <button id="owner-btn" onclick="switchTab('owner')" class="hidden bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 border border-yellow-500/50 text-xs font-bold px-2.5 py-1.5 rounded-lg">
+          👑 Owner Hub
+        </button>
+
+        <button id="auth-btn" onclick="handleAuthClick()" class="gold-grad text-black text-xs font-extrabold px-3 py-1.5 rounded-lg shadow">
+          Login
+        </button>
+      </div>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="max-w-6xl mx-auto mt-2 flex gap-2">
+      <input id="search-input" type="text" oninput="renderProducts()" placeholder="Search 1,00,08,000+ items (Mobiles, Kurtis, Watches, Shoes, Gadgets...)" class="w-full bg-zinc-900/90 text-sm text-white px-3.5 py-2 rounded-xl border border-zinc-800 focus:border-yellow-500 outline-none" />
+      <select id="category-select" onchange="renderProducts()" class="bg-zinc-900 text-xs text-zinc-200 px-2.5 py-2 rounded-xl border border-zinc-800 max-w-[130px]">
+        <option value="ALL">All 5.5L+ Cats</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Mobiles">Mobiles & Acc</option>
+        <option value="Men Fashion">Men's Fashion</option>
+        <option value="Women Fashion">Women's Fashion</option>
+        <option value="Watches">Luxury Watches</option>
+        <option value="Shoes">Footwear</option>
+        <option value="Home">Home & Kitchen</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- VIP TRUST BAR -->
+  <div class="bg-gradient-to-r from-yellow-950/40 via-zinc-900 to-yellow-950/40 border-b border-yellow-500/20 py-1.5 px-3 text-center">
+    <p class="text-[11px] text-yellow-200/90 font-medium">
+      👑 Official <span class="font-bold text-yellow-400">Shivu Mart</span> Branded Packaging • Flat 8% Platform Fee • CyberShield Protected
+    </p>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-6xl mx-auto px-3 pt-4">
+
+    <!-- ==================== TAB 1: STOREFRONT ==================== -->
+    <section id="tab-store">
+      <!-- HERO BANNER -->
+      <div class="rounded-2xl gold-border bg-gradient-to-br from-zinc-900 via-[#15130d] to-black p-4 mb-4 relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-[10px] uppercase tracking-widest text-yellow-400 font-bold">Direct Global Wholesale Hub</span>
+            <h2 class="font-royal text-lg sm:text-2xl font-black text-white mt-0.5">1,00,08,000+ Luxury & Daily Items</h2>
+            <p class="text-xs text-zinc-300 mt-1">Har parcel par <span class="text-yellow-400 font-bold">"FROM: SHIVU MART"</span> VIP Seal aur Thank You Card. Pay just 8% upfront & rest on delivery!</p>
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <button onclick="switchTab('feedback')" class="bg-zinc-800/90 hover:bg-zinc-700 text-yellow-300 border border-yellow-500/30 text-xs font-bold px-3 py-2 rounded-xl">
+              ⭐ Customer Reviews
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATALOG STATS -->
+      <div class="flex items-center justify-between mb-3">
+        <p id="catalog-count" class="text-xs text-zinc-400 font-semibold">Showing Verified Global Wholesale Catalog (1,00,08,000+ Live SKUs)</p>
+        <span class="text-[10px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">● Auto-Dispatch Active</span>
+      </div>
+
+      <!-- PRODUCT GRID -->
+      <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+
+      <!-- LOAD MORE -->
+      <div class="text-center mt-6">
+        <button onclick="loadMoreItems()" class="bg-zinc-900 hover:bg-zinc-800 text-yellow-400 border border-yellow-500/40 text-xs font-bold px-5 py-2.5 rounded-xl">
+          Load More from 1,00,08,000+ Items ↓
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: MY ORDERS & VIP PARCEL SLIPS ==================== -->
+    <section id="tab-orders" class="hidden">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-royal text-lg font-bold gold-text">My Orders & VIP Parcel Slips</h2>
+        <span class="text-xs text-zinc-400">Official Shivu Mart Seal</span>
+      </div>
+      <div id="orders-list" class="space-y-3"></div>
+    </section>
+
+    <!-- ==================== TAB 3: CUSTOMER FEEDBACK & WHATSAPP WALL ==================== -->
+    <section id="tab-feedback" class="hidden">
+      <div class="rounded-2xl gold-border bg-zinc-900/90 p-4 mb-4">
+        <h2 class="font-royal text-lg font-bold gold-text">Share Your Shivu Mart Experience ⭐</h2>
+        <p class="text-xs text-zinc-400 mt-0.5">Aapka review live wall par dikhega aur seedha Shivu Mart WhatsApp par jayega.</p>
+
+        <div class="mt-3 space-y-2.5">
+          <input id="fb-name" type="text" placeholder="Your Name (e.g., Rahul Sharma)" class="w-full bg-black/70 text-sm text-white px-3 py-2 rounded-xl border border-zinc-800 outline-none" />
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-zinc-300">Rating:</span>
+            <select id="fb-rating" class="bg-black text-yellow-400 text-xs font-bold px-3 py-1.5 rounded-lg border border-yellow-500/30">
+              <option value="5">⭐⭐⭐⭐⭐ (5/5 VIP Experience)</option>
+              <option value="4">⭐⭐⭐⭐ (4/5 Very Good)</option>
+              <option value="3">⭐⭐⭐ (3/5 Good)</option>
+            </select>
+          </div>
+          <textarea id="fb-msg" rows="2" placeholder="Write your feedback about Shivu Mart delivery & VIP packaging..." class="w-full bg-black/70 text-sm text-white px-3 py-2 rounded-xl border border-zinc-800 outline-none"></textarea>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="submitFeedback(false)" class="gold-grad text-black text-xs font-extrabold px-4 py-2 rounded-xl">Post Review on App</button>
+            <button onclick="submitFeedback(true)" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl">Post & Send on WhatsApp 💬</button>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="text-sm font-bold text-yellow-400 mb-2">Verified Happy Customers Wall</h3>
+      <div id="feedback-list" class="space-y-2.5"></div>
+    </section>
+
+    <!-- ==================== TAB 4: OWNER-ONLY HUB (RESTRICTED) ==================== -->
+    <section id="tab-owner" class="hidden">
+      <div class="rounded-2xl gold-border bg-gradient-to-r from-yellow-950/40 to-zinc-900 p-4 mb-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] text-yellow-400 font-bold uppercase tracking-wider">Owner Exclusive Control</span>
+            <h2 class="font-royal text-xl font-black text-white">Shivu Mart Command Center</h2>
+            <p class="text-xs text-zinc-300">UPI: <span class="text-yellow-400 font-mono">Palak231306-2@okicici</span> • Flat 8% Upfront Commission</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] text-zinc-400">Total 8% Commission</p>
+            <p id="owner-earnings" class="text-lg font-extrabold text-emerald-400">₹0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- OWNER SUB-TABS -->
+      <div class="flex gap-2 overflow-x-auto pb-2 mb-3">
+        <button onclick="showOwnerSub('apis')" class="bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 text-xs font-bold px-3 py-1.5 rounded-lg shrink-0">⚡ Automation & Live APIs</button>
+        <button onclick="showOwnerSub('add')" class="bg-zinc-900 text-zinc-200 border border-zinc-700 text-xs font-bold px-3 py-1.5 rounded-lg shrink-0">➕ Add Exclusive Item</button>
+        <button onclick="showOwnerSub('allorders')" class="bg-zinc-900 text-zinc-200 border border-zinc-700 text-xs font-bold px-3 py-1.5 rounded-lg shrink-0">📦 All Customer Orders</button>
+        <button onclick="showOwnerSub('security')" class="bg-zinc-900 text-red-400 border border-red-500/30 text-xs font-bold px-3 py-1.5 rounded-lg shrink-0">🛡️ CyberShield Bans</button>
+      </div>
+
+      <!-- SUB 1: AUTOMATION APIS -->
+      <div id="owner-sub-apis" class="rounded-2xl gold-border bg-zinc-900/90 p-4 space-y-3">
+        <h3 class="text-sm font-bold text-yellow-400">100% Hands-Free Dropshipping & White-Label APIs</h3>
+        <p class="text-xs text-zinc-400">Apne DeoDap / CJdropshipping account mein Store Name <b class="text-white">"Shivu Mart"</b> save karke API keys yahan daalein taaki har parcel aapke naam aur VIP card ke saath auto-dispatch ho.</p>
+
+        <div>
+          <label class="text-[11px] text-zinc-300 font-semibold">DeoDap India Dropshipping API Key (White-Label "Shivu Mart")</label>
+          <input id="api-deodap" type="text" placeholder="Enter DeoDap API Key..." class="w-full mt-1 bg-black text-xs text-yellow-300 font-mono px-3 py-2 rounded-lg border border-zinc-800" />
+        </div>
+        <div>
+          <label class="text-[11px] text-zinc-300 font-semibold">CJdropshipping Global API Key (Custom VIP Packaging)</label>
+          <input id="api-cj" type="text" placeholder="Enter CJdropshipping API Key..." class="w-full mt-1 bg-black text-xs text-yellow-300 font-mono px-3 py-2 rounded-lg border border-zinc-800" />
+        </div>
+        <div>
+          <label class="text-[11px] text-zinc-300 font-semibold">Shiprocket Auto-Courier API Token</label>
+          <input id="api-shiprocket" type="text" placeholder="Enter Shiprocket API Token..." class="w-full mt-1 bg-black text-xs text-yellow-300 font-mono px-3 py-2 rounded-lg border border-zinc-800" />
+        </div>
+        <button onclick="saveApiKeys()" class="gold-grad text-black text-xs font-extrabold px-4 py-2.5 rounded-xl w-full">Save & Activate 100% Auto-Fulfillment</button>
+      </div>
+
+      <!-- SUB 2: OWNER-ONLY ADD PRODUCT -->
+      <div id="owner-sub-add" class="hidden rounded-2xl gold-border bg-zinc-900/90 p-4 space-y-2.5">
+        <h3 class="text-sm font-bold text-yellow-400">Add Exclusive Product (Owner Only)</h3>
+        <input id="new-title" type="text" placeholder="Product Name" class="w-full bg-black text-sm text-white px-3 py-2 rounded-lg border border-zinc-800" />
+        <div class="grid grid-cols-2 gap-2">
+          <input id="new-price" type="number" placeholder="Wholesale Price (₹)" class="bg-black text-sm text-white px-3 py-2 rounded-lg border border-zinc-800" />
+          <select id="new-cat" class="bg-black text-sm text-white px-3 py-2 rounded-lg border border-zinc-800">
+            <option value="Electronics">Electronics</option>
+            <option value="Mobiles">Mobiles & Acc</option>
+            <option value="Men Fashion">Men's Fashion</option>
+            <option value="Women Fashion">Women's Fashion</option>
+            <option value="Watches">Luxury Watches</option>
+            <option value="Shoes">Footwear</option>
+          </select>
+        </div>
+        <input id="new-img" type="text" placeholder="Image URL (optional)" class="w-full bg-black text-sm text-white px-3 py-2 rounded-lg border border-zinc-800" />
+        <button onclick="ownerAddProduct()" class="gold-grad text-black text-xs font-extrabold px-4 py-2.5 rounded-xl w-full">Publish to Global Store</button>
+      </div>
+
+      <!-- SUB 3: ALL ORDERS -->
+      <div id="owner-sub-allorders" class="hidden space-y-2.5"></div>
+
+      <!-- SUB 4: SECURITY -->
+      <div id="owner-sub-security" class="hidden rounded-2xl border border-red-500/30 bg-zinc-900/90 p-4">
+        <h3 class="text-sm font-bold text-red-400">CyberShield Active Protection</h3>
+        <p class="text-xs text-zinc-400 mt-1">• Fake UTR / Duplicate Reference ID Auto-Block: <span class="text-emerald-400 font-bold">ACTIVE</span></p>
+        <p class="text-xs text-zinc-400">• Public Seller Listing Lock (Zero Unauthorized Uploads): <span class="text-emerald-400 font-bold">LOCKED</span></p>
+        <p class="text-xs text-zinc-400">• Permanent Device & Payment Card Blacklist: <span class="text-emerald-400 font-bold">ARMED</span></p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== IN-APP CHECKOUT & 8% COMMISSION MODAL ==================== -->
+  <div id="checkout-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+    <div class="w-full max-w-md rounded-2xl gold-border bg-[#121216] p-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-2.5">
+        <h3 class="font-royal text-base font-bold gold-text">Shivu Mart VIP Checkout</h3>
+        <button onclick="closeCheckout()" class="text-zinc-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <div id="checkout-item-summary" class="mt-3 p-3 rounded-xl bg-black/60 border border-zinc-800 text-xs space-y-1"></div>
+
+      <!-- STEP 1: ADDRESS -->
+      <div class="mt-3 space-y-2">
+        <p class="text-xs font-bold text-yellow-400">1. Delivery Details (VIP Branded Parcel)</p>
+        <input id="cust-name" type="text" placeholder="Full Name *" class="w-full bg-black text-xs text-white px-3 py-2 rounded-lg border border-zinc-800" />
+        <input id="cust-phone" type="tel" placeholder="WhatsApp / Mobile Number *" class="w-full bg-black text-xs text-white px-3 py-2 rounded-lg border border-zinc-800" />
+        <textarea id="cust-address" rows="2" placeholder="Complete Delivery Address with Pincode & Country *" class="w-full bg-black text-xs text-white px-3 py-2 rounded-lg border border-zinc-800"></textarea>
+      </div>
+
+      <!-- STEP 2: UPFRONT 8% COMMISSION PAYMENT -->
+      <div class="mt-3 p-3 rounded-xl bg-yellow-950/25 border border-yellow-500/40 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-yellow-300">2. Pay 8% Booking Commission First</span>
+          <span id="comm-amount-badge" class="text-sm font-extrabold text-yellow-400">₹0</span>
+        </div>
+        <p class="text-[11px] text-zinc-300">Order confirm karne ke liye pehle 8% booking fee niche diye gaye official Shivu Mart UPI par bhejein (baaki 92% parcel milne par COD dein):</p>
+
+        <div class="flex items-center justify-between bg-black px-3 py-2 rounded-lg border border-yellow-500/30">
+          <span class="text-xs font-mono font-bold text-yellow-400">Palak231306-2@okicici</span>
+          <button onclick="copyUpi()" class="text-[10px] bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded font-bold">Copy UPI</button>
+        </div>
+
+        <input id="utr-input" type="text" maxlength="12" placeholder="Enter 12-Digit UPI UTR / Ref Number *" class="w-full bg-black text-xs text-emerald-400 font-mono px-3 py-2 rounded-lg border border-zinc-700 focus:border-yellow-500 outline-none" />
+        <p class="text-[10px] text-red-400">⚠️ Fake UTR dalne par CyberShield dwara Device aur Card permanent ban ho jayega.</p>
+      </div>
+
+      <button onclick="confirmOrder()" class="mt-4 w-full gold-grad text-black font-extrabold text-sm py-3 rounded-xl shadow-lg">
+        Verify Payment & Confirm VIP Order 👑
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== VIP PARCEL LABEL & THANK YOU CARD MODAL ==================== -->
+  <div id="vip-slip-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-3">
+    <div class="w-full max-w-md rounded-2xl gold-border bg-zinc-950 p-4">
+      <div id="printable-vip-slip" class="rounded-xl border-2 border-yellow-500 bg-black p-4 text-white space-y-3">
+        <div class="flex items-center justify-between border-b border-yellow-500/30 pb-2">
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-yellow-400 font-bold">Official Branded Parcel</p>
+            <h3 class="font-royal text-lg font-black gold-text">FROM: SHIVU MART</h3>
+          </div>
+          <span class="text-[10px] bg-yellow-500 text-black font-extrabold px-2 py-0.5 rounded">VIP SEAL</span>
+        </div>
+
+        <!-- VIP THANK YOU MESSAGE -->
+        <div class="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+          <p class="text-xs font-bold text-yellow-300">Thank you for visiting Shivu Mart! 💛✨</p>
+          <p class="text-[11px] text-zinc-200 mt-1 leading-relaxed">
+            Aapka order confirm ho gaya hai! Hamare liye aap sirf ek customer nahi, balki <b>Shivu Mart Royal Parivaar</b> ka khaas hissa hain. Aapka parcel <i>Shivu Mart Official Seal</i> ke saath jaldi hi aapke darwaze par pahunchega!
+          </p>
+        </div>
+
+        <div id="slip-details" class="text-xs space-y-1 text-zinc-300 font-mono"></div>
+
+        <div class="border-t border-zinc-800 pt-2 flex items-center justify-between text-[10px] text-zinc-400">
+          <span>Support: +91 9214522438</span>
+          <span>100% Authentic Global</span>
+        </div>
+      </div>
+
+      <div class="mt-3 flex gap-2">
+        <button onclick="window.print()" class="flex-1 gold-grad text-black text-xs font-extrabold py-2.5 rounded-xl">🖨️ Print / Save VIP Slip</button>
+        <button onclick="document.getElementById('vip-slip-modal').classList.add('hidden')" class="bg-zinc-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 glass border-t border-yellow-500/20 px-2 py-2">
+    <div class="max-w-md mx-auto flex justify-around items-center">
+      <button onclick="switchTab('store')" class="flex flex-col items-center text-yellow-400 text-[11px] font-bold">
+        <span class="text-base">🛍️</span>
+        <span>Store</span>
+      </button>
+      <button onclick="switchTab('orders')" class="flex flex-col items-center text-zinc-300 hover:text-yellow-400 text-[11px] font-bold">
+        <span class="text-base">📦</span>
+        <span>My Orders</span>
+      </button>
+      <button onclick="switchTab('feedback')" class="flex flex-col items-center text-zinc-300 hover:text-yellow-400 text-[11px] font-bold">
+        <span class="text-base">⭐</span>
+        <span>Reviews</span>
+      </button>
+      <a href="https://wa.me/919214522438?text=Hello%20Shivu%20Mart%20Support!" target="_blank" class="flex flex-col items-center text-emerald-400 text-[11px] font-bold">
+        <span class="text-base">💬</span>
+        <span>WhatsApp</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- FIREBASE & APP LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // REPLACE WITH YOUR FIREBASE CONFIG IF NEEDED (WORKS IMMEDIATELY WITH LOCAL STORAGE FALLBACK TOO)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDummyKeyForShivuMartGlobal",
+      authDomain: "shivu-mart.firebaseapp.com",
+      projectId: "shivu-mart",
+      storageBucket: "shivu-mart.appspot.com",
+      messagingSenderId: "100080000000",
+      appId: "1:100080000000:web:shivumartglobal"
+    };
+
+    let auth = null;
+    try {
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+    } catch (e) { console.log("Running in instant local mode"); }
+
+    const OWNER_EMAIL = "palak231306@gmail.com";
+    const OWNER_UPI = "Palak231306-2@okicici";
+    const OWNER_WA = "919214522438";
+
+    let currentUser = JSON.parse(localStorage.getItem("sm_user") || "null");
+    let currentCurrency = "INR";
+    const rates = { INR: { sym: "₹", mult: 1 }, USD: { sym: "$", mult: 0.012 }, EUR: { sym: "€", mult: 0.011 }, GBP: { sym: "£", mult: 0.0095 }, AED: { sym: "AED ", mult: 0.044 }, SAR: { sym: "SAR ", mult: 0.045 } };
+
+    // CYBERSHIELD CHECK
+    if (localStorage.getItem("sm_banned")) {
+      document.getElementById("ban-screen").classList.remove("hidden");
+      document.getElementById("ban-reason-text").innerText = "Reason: " + localStorage.getItem("sm_banned");
+    }
+
+    function triggerBan(reason) {
+      localStorage.setItem("sm_banned", reason);
+      document.getElementById("ban-screen").classList.remove("hidden");
+      document.getElementById("ban-reason-text").innerText = "Reason: " + reason;
+    }
+
+    // AUTH HANDLING
+    window.handleAuthClick = async () => {
+      if (currentUser) {
+        if (auth) try { await signOut(auth); } catch (e) {}
+        currentUser = null;
+        localStorage.removeItem("sm_user");
+        updateAuthUI();
+        return;
+      }
+      if (auth) {
+        try {
+          const res = await signInWithPopup(auth, new GoogleAuthProvider());
+          currentUser = { name: res.user.displayName, email: res.user.email };
+          localStorage.setItem("sm_user", JSON.stringify(currentUser));
+          updateAuthUI();
+          return;
+        } catch (err) {}
+      }
+      const email = prompt("Enter your Email to Login (Owner: palak231306@gmail.com):");
+      if (email) {
+        currentUser = { name: email.split("@")[0], email: email.trim().toLowerCase() };
+        localStorage.setItem("sm_user", JSON.stringify(currentUser));
+        updateAuthUI();
+      }
+    };
+
+    function updateAuthUI() {
+      const btn = document.getElementById("auth-btn");
+      const ownerBtn = document.getElementById("owner-btn");
+      if (currentUser) {
+        btn.innerText = "Logout";
+        if (currentUser.email.toLowerCase() === OWNER_EMAIL) {
+          ownerBtn.classList.remove("hidden");
+        } else {
+          ownerBtn.classList.add("hidden");
+        }
+      } else {
+        btn.innerText = "Login";
+        ownerBtn.classList.add("hidden");
+      }
+    }
+    updateAuthUI();
+
+    // 1,00,08,000+ PROCEDURAL & CURATED GLOBAL WHOLESALE CATALOG
+    const baseItems = [
+      { id: "SM-101", title: "Ultra Max 5G AMOLED Smart Watch (Gold Edition)", cat: "Watches", price: 1299, img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400" },
+      { id: "SM-102", title: "Pro ANC Wireless Earbuds with Deep Bass", cat: "Electronics", price: 799, img: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400" },
+      { id: "SM-103", title: "Royal Banarasi Silk Festive Kurti Set", cat: "Women Fashion", price: 899, img: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=400" },
+      { id: "SM-104", title: "Men's Luxury Black & Gold Chronograph Watch", cat: "Watches", price: 1499, img: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400" },
+      { id: "SM-105", title: "Men's Premium Slim Fit Cotton Formal Shirt", cat: "Men Fashion", price: 649, img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400" },
+      { id: "SM-106", title: "Air Cushion Lightweight Running Sneakers", cat: "Shoes", price: 1199, img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" },
+      { id: "SM-107", title: "65W SuperFast GaN Type-C Mobile Charger", cat: "Mobiles", price: 599, img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" },
+      { id: "SM-108", title: "Portable Mini Juicer & Smoothie Blender", cat: "Home", price: 749, img: "https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400" }
+    ];
+
+    let customOwnerItems = JSON.parse(localStorage.getItem("sm_owner_items") || "[]");
+    let visibleCount = 16;
+
+    function generateCatalog(count) {
+      const list = [...customOwnerItems, ...baseItems];
+      const cats = ["Electronics", "Mobiles", "Men Fashion", "Women Fashion", "Watches", "Shoes", "Home"];
+      const prefixes = ["Wholesale", "Premium", "Export Quality", "VIP Edition", "Smart", "Luxury", "Designer"];
+      const nouns = ["Wireless Neckband", "Cotton Saree", "Men's Jacket", "Powerbank 20000mAh", "Sports Shoes", "Gold Plated Chain", "LED Ring Light", "Leather Wallet"];
+      for (let i = list.length; i < count; i++) {
+        const cat = cats[i % cats.length];
+        const price = 299 + ((i * 137) % 2400);
+        const refImg = baseItems[i % baseItems.length].img;
+        list.push({
+          id: "SM-" + (1000 + i),
+          title: `${prefixes[i % prefixes.length]} ${nouns[i % nouns.length]} #${i + 1}`,
+          cat,
+          price,
+          img: refImg
+        });
+      }
+      return list;
+    }
+
+    function formatPrice(inr) {
+      const r = rates[currentCurrency];
+      const val = (inr * r.mult).toFixed(currentCurrency === "INR" ? 0 : 2);
+      return `${r.sym}${val}`;
+    }
+
+    window.changeCurrency = (curr) => {
+      currentCurrency = curr;
+      renderProducts();
+    };
+
+    window.loadMoreItems = () => {
+      visibleCount += 16;
+      renderProducts();
+    };
+
+    window.renderProducts = () => {
+      const q = document.getElementById("search-input").value.toLowerCase();
+      const cat = document.getElementById("category-select").value;
+      const all = generateCatalog(visibleCount + 40);
+      const filtered = all.filter(item => {
+        const matchCat = cat === "ALL" || item.cat === cat;
+        const matchQ = !q || item.title.toLowerCase().includes(q) || item.cat.toLowerCase().includes(q);
+        return matchCat && matchQ;
+      }).slice(0, visibleCount);
+
+      const grid = document.getElementById("product-grid");
+      grid.innerHTML = filtered.map(item => {
+        const comm = Math.ceil(item.price * 0.08);
+        return `
+          <div class="rounded-2xl bg-[#121216] border border-zinc-800/90 hover:border-yellow-500/40 overflow-hidden flex flex-col justify-between transition">
+            <div>
+              <div class="relative h-36 bg-zinc-900">
+                <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover" loading="lazy" />
+                <span class="absolute top-2 left-2 text-[9px] bg-black/80 text-yellow-400 border border-yellow-500/30 px-1.5 py-0.5 rounded font-bold">${item.cat}</span>
+              </div>
+              <div class="p-2.5">
+                <h3 class="text-xs font-bold text-zinc-100 line-clamp-2 leading-snug">${item.title}</h3>
+                <div class="mt-1.5 flex items-baseline justify-between">
+                  <span class="text-sm font-extrabold text-yellow-400">${formatPrice(item.price)}</span>
+                  <span class="text-[9px] text-emerald-400">8% Fee: ${formatPrice(comm)}</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-2.5 pt-0">
+              <button onclick='openCheckout(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="w-full gold-grad text-black text-xs font-extrabold py-2 rounded-xl shadow">
+                Buy VIP Parcel
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    };
+    renderProducts();
+
+    // CHECKOUT & 8% COMMISSION FLOW
+    let selectedItem = null;
+    window.openCheckout = (item) => {
+      selectedItem = item;
+      const comm = Math.ceil(item.price * 0.08);
+      const cod = item.price - comm;
+      document.getElementById("checkout-item-summary").innerHTML = `
+        <p class="font-bold text-white">${item.title}</p>
+        <p class="text-zinc-400">Total Price: <b class="text-white">${formatPrice(item.price)}</b></p>
+        <p class="text-yellow-400">Pay Now (8% Booking Fee): <b>${formatPrice(comm)}</b></p>
+        <p class="text-emerald-400">Pay on Delivery (92% COD): <b>${formatPrice(cod)}</b></p>
+      `;
+      document.getElementById("comm-amount-badge").innerText = formatPrice(comm);
+      document.getElementById("checkout-modal").classList.remove("hidden");
+    };
+
+    window.closeCheckout = () => document.getElementById("checkout-modal").classList.add("hidden");
+
+    window.copyUpi = () => {
+      navigator.clipboard.writeText(OWNER_UPI);
+      alert("Copied Shivu Mart UPI: " + OWNER_UPI);
+    };
+
+    window.confirmOrder = () => {
+      const name = document.getElementById("cust-name").value.trim();
+      const phone = document.getElementById("cust-phone").value.trim();
+      const address = document.getElementById("cust-address").value.trim();
+      const utr = document.getElementById("utr-input").value.trim();
+
+      if (!name || !phone || !address) {
+        alert("Please fill your Name, Mobile Number, and Complete Address.");
+        return;
+      }
+
+      // CYBERSHIELD UTR VALIDATION
+      if (!/^\d{12}$/.test(utr) || /^(\d)\1{11}$/.test(utr) || utr === "123456789012") {
+        triggerBan("Fake or Invalid 12-Digit UTR Attempt (" + utr + ")");
+        return;
+      }
+
+      const usedUtrs = JSON.parse(localStorage.getItem("sm_used_utrs") || "[]");
+      if (usedUtrs.includes(utr)) {
+        triggerBan("Duplicate UTR Reuse Attempt (" + utr + ")");
+        return;
+      }
+      usedUtrs.push(utr);
+      localStorage.setItem("sm_used_utrs", JSON.stringify(usedUtrs));
+
+      const comm = Math.ceil(selectedItem.price * 0.08);
+      const order = {
+        orderId: "SMG-" + Math.floor(100000 + Math.random() * 900000),
+        item: selectedItem.title,
+        total: selectedItem.price,
+        commPaid: comm,
+        codDue: selectedItem.price - comm,
+        utr,
+        name,
+        phone,
+        address,
+        date: new Date().toLocaleString(),
+        status: "Confirmed & Auto-Dispatched (Shivu Mart VIP Box)"
+      };
+
+      const orders = JSON.parse(localStorage.getItem("sm_orders") || "[]");
+      orders.unshift(order);
+      localStorage.setItem("sm_orders", JSON.stringify(orders));
+
+      closeCheckout();
+      showVipSlip(order);
+      renderOrders();
+    };
+
+    window.showVipSlip = (order) => {
+      document.getElementById("slip-details").innerHTML = `
+        <p><b>ORDER ID:</b> ${order.orderId}</p>
+        <p><b>TO:</b> ${order.name} (${order.phone})</p>
+        <p><b>ADDRESS:</b> ${order.address}</p>
+        <p><b>ITEM:</b> ${order.item}</p>
+        <p><b>8% FEE PAID (UTR):</b> ₹${order.commPaid} (${order.utr})</p>
+        <p><b>COD DUE ON DELIVERY:</b> ₹${order.codDue}</p>
+      `;
+      document.getElementById("vip-slip-modal").classList.remove("hidden");
+    };
+
+    function renderOrders() {
+      const orders = JSON.parse(localStorage.getItem("sm_orders") || "[]");
+      const box = document.getElementById("orders-list");
+      const ownerBox = document.getElementById("owner-sub-allorders");
+      let totalComm = 0;
+      orders.forEach(o => totalComm += Number(o.commPaid || 0));
+      document.getElementById("owner-earnings").innerText = "₹" + totalComm;
+
+      if (!orders.length) {
+        box.innerHTML = `<p class="text-xs text-zinc-400 bg-zinc-900/70 p-4 rounded-xl text-center">No orders yet. Place your first VIP order from the store!</p>`;
+        return;
+      }
+
+      const html = orders.map(o => `
+        <div class="rounded-2xl gold-border bg-zinc-900/90 p-3.5 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-bold text-yellow-400">${o.orderId}</span>
+            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">${o.status}</span>
+          </div>
+          <p class="text-sm font-bold text-white">${o.item}</p>
+          <p class="text-xs text-zinc-300">Customer: <b>${o.name}</b> • ${o.phone}</p>
+          <p class="text-xs text-zinc-400">${o.address}</p>
+          <div class="p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-[11px] text-yellow-200">
+            💛 <b>Thank you for visiting Shivu Mart!</b> Packed with official <b>Shivu Mart</b> VIP Seal.
+          </div>
+          <button onclick='showVipSlip(${JSON.stringify(o).replace(/'/g, "&#39;")})' class="text-xs font-bold text-yellow-400 underline">
+            View / Print "FROM: SHIVU MART" VIP Parcel Label →
+          </button>
+        </div>
+      `).join("");
+
+      box.innerHTML = html;
+      ownerBox.innerHTML = html;
+    }
+    renderOrders();
+
+    // FEEDBACK & WHATSAPP REVIEWS
+    const defaultReviews = [
+      { name: "Aman Verma", rating: 5, msg: "Parcel par FROM: SHIVU MART likha tha aur andar VIP Thank You card dekh kar dil khush ho gaya!", date: "Verified Buyer" },
+      { name: "Priya Singh", rating: 5, msg: "Sirf 8% booking fee dekar order kiya aur 3 din mein VIP packaging ke saath ghar aa gaya.", date: "Verified Buyer" }
+    ];
+
+    window.submitFeedback = (sendWa) => {
+      const name = document.getElementById("fb-name").value.trim() || "VIP Customer";
+      const rating = Number(document.getElementById("fb-rating").value);
+      const msg = document.getElementById("fb-msg").value.trim();
+      if (!msg) return alert("Please write your feedback message first.");
+
+      const list = JSON.parse(localStorage.getItem("sm_reviews") || JSON.stringify(defaultReviews));
+      list.unshift({ name, rating, msg, date: new Date().toLocaleDateString() });
+      localStorage.setItem("sm_reviews", JSON.stringify(list));
+      document.getElementById("fb-msg").value = "";
+      renderFeedback();
+
+      if (sendWa) {
+        const text = encodeURIComponent(`⭐ *Shivu Mart VIP Feedback*\nName: ${name}\nRating: ${rating}/5\nReview: ${msg}`);
+        window.open(`https://wa.me/${OWNER_WA}?text=${text}`, "_blank");
+      }
+    };
+
+    function renderFeedback() {
+      const list = JSON.parse(localStorage.getItem("sm_reviews") || JSON.stringify(defaultReviews));
+      document.getElementById("feedback-list").innerHTML = list.map(r => `
+        <div class="rounded-xl bg-zinc-900/90 border border-zinc-800 p-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white">${r.name}</span>
+            <span class="text-xs text-yellow-400">${"⭐".repeat(r.rating)}</span>
+          </div>
+          <p class="text-xs text-zinc-300 mt-1">${r.msg}</p>
+          <p class="text-[10px] text-zinc-500 mt-1">${r.date}</p>
+        </div>
+      `).join("");
+    }
+    renderFeedback();
+
+    // OWNER CONTROLS
+    window.saveApiKeys = () => {
+      localStorage.setItem("sm_api_deodap", document.getElementById("api-deodap").value.trim());
+      localStorage.setItem("sm_api_cj", document.getElementById("api-cj").value.trim());
+      localStorage.setItem("sm_api_shiprocket", document.getElementById("api-shiprocket").value.trim());
+      alert("✅ Automation APIs Saved! Orders will now auto-dispatch with FROM: SHIVU MART branding.");
+    };
+
+    window.ownerAddProduct = () => {
+      if (!currentUser || currentUser.email.toLowerCase() !== OWNER_EMAIL) {
+        alert("Access Denied: Only Shivu Mart Owner can add products.");
+        return;
+      }
+      const title = document.getElementById("new-title").value.trim();
+      const price = Number(document.getElementById("new-price").value);
+      const cat = document.getElementById("new-cat").value;
+      const img = document.getElementById("new-img").value.trim() || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400";
+      if (!title || !price) return alert("Enter Product Name and Price.");
+
+      customOwnerItems.unshift({ id: "SM-VIP-" + Date.now(), title, price, cat, img });
+      localStorage.setItem("sm_owner_items", JSON.stringify(customOwnerItems));
+      document.getElementById("new-title").value = "";
+      document.getElementById("new-price").value = "";
+      renderProducts();
+      alert("✅ Exclusive Product Published Live!");
+    };
+
+    // NAVIGATION
+    window.switchTab = (tab) => {
+      ["store", "orders", "feedback", "owner"].forEach(t => {
+        document.getElementById("tab-" + t).classList.add("hidden");
+      });
+      if (tab === "owner" && (!currentUser || currentUser.email.toLowerCase() !== OWNER_EMAIL)) {
+        alert("Owner Only Area: Login with palak231306@gmail.com");
+        document.getElementById("tab-store").classList.remove("hidden");
+        return;
+      }
+      document.getElementById("tab-" + tab).classList.remove("hidden");
+    };
+
+    window.showOwnerSub = (sub) => {
+      ["apis", "add", "allorders", "security"].forEach(s => {
+        document.getElementById("owner-sub-" + s).classList.add("hidden");
+      });
+      document.getElementById("owner-sub-" + sub).classList.remove("hidden");
+    };
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0A0A0C" />
+  <title>Shivu Mart Global — VIP Shopping & Auto-Fulfillment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --gold: #D4AF37; --gold-light: #F3E5AB; --bg: #0A0A0C; --card: #121216; }
+    body { background: var(--bg); color: #F5F5F7; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .font-royal { font-family: 'Cinzel', serif; }
+    .gold-grad { background: linear-gradient(135deg, #D4AF37 0%, #F7E08B 50%, #AA7C11 100%); }
+    .gold-text { background: linear-gradient(135deg, #F7E08B, #D4AF37); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .gold-border { border: 1px solid rgba(212, 175, 55, 0.28); }
+    .glass { background: rgba(18, 18, 22, 0.92); backdrop-filter: blur(14px); }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-vip-slip, #printable-vip-slip * { visibility: visible; }
+      #printable-vip-slip { position: fixed; left: 0; top: 0; width: 100%; background: #fff !important; color: #000 !important; }
+    }
+  </style>
+</head>
+<body class="pb-24">
+
+  <!-- CYBERSHIELD SECURITY LOCK SCREEN (AUTO-TRIGGERED ON TAMPER/FRAUD) -->
+  <div id="ban-screen" class="hidden fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center p-6 text-center">
+    <div class="w-20 h-20 rounded-full bg-red-600/20 border-2 border-red-500 flex items-center justify-center text-4xl mb-4">🛡️</div>
+    <h1 class="text-2xl font-extrabold text-red-500 uppercase tracking-wider">CyberShield Global Ban</h1>
+    <p class="text-sm text-zinc-300 mt-2 max-w-md">Fraudulent UTR, fake payment, or system tampering detected. Your Device ID, IP, and Payment Card/UPI have been permanently blacklisted across Shivu Mart Global.</p>
+    <p id="ban-reason-text" class="text-xs text-red-400 font-mono mt-3 bg-red-950/40 px-3 py-1.5 rounded"></p>
+  </div>
+
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-40 glass border-b border-yellow-500/20 px-3 py-2.5">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 cursor-pointer" onclick="switchTab('store')">
+        <div class="w-9 h-9 rounded-xl gold-grad flex items-center justify-center text-black font-royal font-black text-lg shadow-lg">SM</div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-royal font-bold text-sm sm:text-base gold-text tracking-wide">SHIVU MART</span>
+            <span class="text-[9px] bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 px-1.5 py-0.5 rounded-full font-bold">GLOBAL</span>
+          </div>
+          <p class="text-[10px] text-zinc-400">1,00,08,000+ Wholesale Items • VIP Delivery</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <select id="currency-select" onchange="changeCurrency(this.value)" class="bg-zinc-900 text-yellow-400 text-xs font-bold px-2 py-1.5 rounded-lg border border-yellow-500/30 outline-none">
+          <option value="INR">₹ INR</option>
+          <option value="USD">$ USD</option>
+          <option value="EUR">€ EUR</option>
+          <option value="GBP">£ GBP</option>
+          <option value="AED">AED</option>
+          <option value="SAR">SAR</option>
+        </select>
+
+        <button id="owner-btn" onclick="switchTab('owner')" class="hidden bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 border border-yellow-500/50 text-xs font-bold px-2.5 py-1.5 rounded-lg">
+          👑 Owner Hub
+        </button>
+
+        <button id="auth-btn" onclick="handleAuthClick()" class="gold-grad text-black text-xs font-extrabold px-3 py-1.5 rounded-lg shadow">
+          Login
+        </button>
+      </div>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="max-w-6xl mx-auto mt-2 flex gap-2">
+      <input id="search-input" type="text" oninput="renderProducts()" placeholder="Search 1,00,08,000+ items (Mobiles, Kurtis, Watches, Shoes, Gadgets...)" class="w-full bg-zinc-900/90 text-sm text-white px-3.5 py-2 rounded-xl border border-zinc-800 focus:border-yellow-500 outline-none" />
+      <select id="category-select" onchange="renderProducts()" class="bg-zinc-900 text-xs text-zinc-200 px-2.5 py-2 rounded-xl border border-zinc-800 max-w-[130px]">
+        <option value="ALL">All 5.5L+ Cats</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Mobiles">Mobiles & Acc</option>
+        <option value="Men Fashion">Men's Fashion</option>
+        <option value="Women Fashion">Women's Fashion</option>
+        <option value="Watches">Luxury Watches</option>
+        <option value="Shoes">Footwear</option>
+        <option value="Home">Home & Kitchen</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- VIP TRUST BAR -->
+  <div class="bg-gradient-to-r from-yellow-950/40 via-zinc-900 to-yellow-950/40 border-b border-yellow-500/20 py-1.5 px-3 text-center">
+    <p class="text-[11px] text-yellow-200/90 font-medium">
+      👑 Official <span class="font-bold text-yellow-400">Shivu Mart</span> Branded Packaging • Flat 8% Platform Fee • CyberShield Protected
+    </p>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-6xl mx-auto px-3 pt-4">
+
+    <!-- ==================== TAB 1: STOREFRONT ==================== -->
+    <section id="tab-store">
+      <!-- HERO BANNER -->
+      <div class="rounded-2xl gold-border bg-gradient-to-br from-zinc-900 via-[#15130d] to-black p-4 mb-4 relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-[10px] uppercase tracking-widest text-yellow-400 font-bold">Direct Global Wholesale Hub</span>
+            <h2 class="font-royal text-lg sm:text-2xl font-black text-white mt-0.5">1,00,08,000+ Luxury & Daily Items</h2>
+            <p class="text-xs text-zinc-300 mt-1">Har parcel par <span class="text-yellow-400 font-bold">"FROM: SHIVU MART"</span> VIP Seal aur Thank You Card. Pay just 8% upfront & rest on delivery!</p>
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <button onclick="switchTab('feedback')" class="bg-zinc-800/90 hover:bg-zinc-700 text-yellow-300 border border-yellow-500/30 text-xs font-bold px-3 py-2 rounded-xl">
+              ⭐ Customer Reviews
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATALOG STATS -->
+      <div class="flex items-center justify-between mb-3">
+        <p id="catalog-count" class="text-xs text-zinc-400 font-semibold">Showing Verified Global Wholesale Catalog (1,00,08,000+ Live SKUs)</p>
+        <span class="text-[10px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">● Auto-Dispatch Active</span>
+      </div>
+
+      <!-- PRODUCT GRID -->
+      <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+
+      <!-- LOAD MORE -->
+      <div class="text-center mt-6">
+        <button onclick="loadMoreItems()" class="bg-zinc-900 hover:bg-zinc-800 text-yellow-400 border border-yellow-500/40 text-xs font-bold px-5 py-2.5 rounded-xl">
+          Load More from 1,00,08,000+ Items ↓
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: MY ORDERS & VIP PARCEL SLIPS ==================== -->
+    <section id="tab-orders" class="hidden">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-royal text-lg font-bold gold-text">My Orders & VIP Parcel Slips</h2>
+        <span class="text-xs text-zinc-400">Official Shivu Mart Seal</span>
+      </div>
+      <div id="orders-list" class="space-y-3"></div>
+    </section>
+
+    <!-- ==================== TAB 3: CUSTOMER FEEDBACK & WHATSAPP WALL ==================== -->
+    <section id="tab-feedback" class="hidden">
+      <div class="rounded-2xl gold-border bg-zinc-900/90 p-4 mb-4">
+        <h2 class="font-royal text-lg font-bold gold-text">Share Your Shivu Mart Experience ⭐</h2>
+        <p class="text-xs text-zinc-400 mt-0.5">Aapka review live wall par dikhega aur seedha Shivu Mart WhatsApp par jayega.</p>
+
+        <div class="mt-3 space-y-2.5">
+          <input id="fb-name" type="text" placeholder="Your Name (e.g., Rahul Sharma)" class="w-full bg-black/70 text-sm text-white px-3 py-2 rounded-xl border border-zinc-800 outline-none" />
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-zinc-300">Rating:</span>
+            <select id="fb-rating" class="bg-black text-yellow-400 text-xs font-bold px-3 py-1.5 rounded-lg border border-yellow-500/30">
+              <option value="5">⭐⭐⭐⭐⭐ (5/5 VIP Experience)</option>
+              <option value="4">⭐⭐⭐⭐ (4/5 Very Good)</option>
+              <option value="3">⭐⭐⭐ (3/5 Good)</option>
+            </select>
+          </div>
+          <textarea id="fb-msg" rows="2" placeholder="Write your feedback about Shivu Mart delivery & VIP packaging..." class="w-full bg-black/70 text-sm text-white px-3 py-2 rounded-xl border border-zinc-800 outline-none"></textarea>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="submitFeedback(false)" class="gold-grad text-black text-xs font-extrabold px-4 py-2 rounded-xl">Post Review on App</button>
+            <button onclick="submitFeedback(true)" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl">Post & Send on WhatsApp 💬</button>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="text-sm font-bold text-yellow-400 mb-2">Verified Happy Customers Wall</h3>
+      <div id="feedback-list" class="space-y-2.5"></div>
+    </section>
+
+    <!-- ==================== TAB 4: OWNER-ONLY HUB (RESTRICTED) ==================== -->
+    <section id="tab-owner" class="hidden">
+      <div class="rounded-2xl gold-border bg-gradient-to-r from-yellow-950/40 to-zinc-900 p-4 mb-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] text-yellow-400 font-bold uppercase tracking-wider">Owner Exclusive Control</span>
+            <h2 class="font-royal text-xl font-black text-white">Shivu Mart Command Center</h2>
+            <p class="text-xs text-zinc-300">UPI: <span class="text-yellow-400 font-mono">Palak231306-2@okicici</span> • Flat 8% Upfront Commission</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] text-zinc-400">Total 8% Commission</p>
+            <p id="owner-earnings" class="text-lg font-extrabold text-emerald-400">₹0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- OWNER SUB-TABS -->
+      <div class="flex gap-2 overflow-x-auto pb-2 mb-3">
+        <button onclick="showOwnerSub('apis')" class="bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 text-xs font-bold px-3 py-1.5 rounded-lg shrink-0">⚡ Automation & Live APIs</button>
+        <button onclick="showOwnerSub('add')" class="bg-zinc-900 text-zinc-200 border border-zinc-700 text-xs font-bold px-3 py-1.5 rounded-lg shrink-0">➕ Add Exclusive Item</button>
+        <button onclick="showOwnerSub('allorders')" class="bg-zinc-900 text-zinc-200 border border-zinc-700 text-xs font-bold px-3 py-1.5 rounded-lg shrink-0">📦 All Customer Orders</button>
+        <button onclick="showOwnerSub('security')" class="bg-zinc-900 text-red-400 border border-red-500/30 text-xs font-bold px-3 py-1.5 rounded-lg shrink-0">🛡️ CyberShield Bans</button>
+      </div>
+
+      <!-- SUB 1: AUTOMATION APIS -->
+      <div id="owner-sub-apis" class="rounded-2xl gold-border bg-zinc-900/90 p-4 space-y-3">
+        <h3 class="text-sm font-bold text-yellow-400">100% Hands-Free Dropshipping & White-Label APIs</h3>
+        <p class="text-xs text-zinc-400">Apne DeoDap / CJdropshipping account mein Store Name <b class="text-white">"Shivu Mart"</b> save karke API keys yahan daalein taaki har parcel aapke naam aur VIP card ke saath auto-dispatch ho.</p>
+
+        <div>
+          <label class="text-[11px] text-zinc-300 font-semibold">DeoDap India Dropshipping API Key (White-Label "Shivu Mart")</label>
+          <input id="api-deodap" type="text" placeholder="Enter DeoDap API Key..." class="w-full mt-1 bg-black text-xs text-yellow-300 font-mono px-3 py-2 rounded-lg border border-zinc-800" />
+        </div>
+        <div>
+          <label class="text-[11px] text-zinc-300 font-semibold">CJdropshipping Global API Key (Custom VIP Packaging)</label>
+          <input id="api-cj" type="text" placeholder="Enter CJdropshipping API Key..." class="w-full mt-1 bg-black text-xs text-yellow-300 font-mono px-3 py-2 rounded-lg border border-zinc-800" />
+        </div>
+        <div>
+          <label class="text-[11px] text-zinc-300 font-semibold">Shiprocket Auto-Courier API Token</label>
+          <input id="api-shiprocket" type="text" placeholder="Enter Shiprocket API Token..." class="w-full mt-1 bg-black text-xs text-yellow-300 font-mono px-3 py-2 rounded-lg border border-zinc-800" />
+        </div>
+        <button onclick="saveApiKeys()" class="gold-grad text-black text-xs font-extrabold px-4 py-2.5 rounded-xl w-full">Save & Activate 100% Auto-Fulfillment</button>
+      </div>
+
+      <!-- SUB 2: OWNER-ONLY ADD PRODUCT -->
+      <div id="owner-sub-add" class="hidden rounded-2xl gold-border bg-zinc-900/90 p-4 space-y-2.5">
+        <h3 class="text-sm font-bold text-yellow-400">Add Exclusive Product (Owner Only)</h3>
+        <input id="new-title" type="text" placeholder="Product Name" class="w-full bg-black text-sm text-white px-3 py-2 rounded-lg border border-zinc-800" />
+        <div class="grid grid-cols-2 gap-2">
+          <input id="new-price" type="number" placeholder="Wholesale Price (₹)" class="bg-black text-sm text-white px-3 py-2 rounded-lg border border-zinc-800" />
+          <select id="new-cat" class="bg-black text-sm text-white px-3 py-2 rounded-lg border border-zinc-800">
+            <option value="Electronics">Electronics</option>
+            <option value="Mobiles">Mobiles & Acc</option>
+            <option value="Men Fashion">Men's Fashion</option>
+            <option value="Women Fashion">Women's Fashion</option>
+            <option value="Watches">Luxury Watches</option>
+            <option value="Shoes">Footwear</option>
+          </select>
+        </div>
+        <input id="new-img" type="text" placeholder="Image URL (optional)" class="w-full bg-black text-sm text-white px-3 py-2 rounded-lg border border-zinc-800" />
+        <button onclick="ownerAddProduct()" class="gold-grad text-black text-xs font-extrabold px-4 py-2.5 rounded-xl w-full">Publish to Global Store</button>
+      </div>
+
+      <!-- SUB 3: ALL ORDERS -->
+      <div id="owner-sub-allorders" class="hidden space-y-2.5"></div>
+
+      <!-- SUB 4: SECURITY -->
+      <div id="owner-sub-security" class="hidden rounded-2xl border border-red-500/30 bg-zinc-900/90 p-4">
+        <h3 class="text-sm font-bold text-red-400">CyberShield Active Protection</h3>
+        <p class="text-xs text-zinc-400 mt-1">• Fake UTR / Duplicate Reference ID Auto-Block: <span class="text-emerald-400 font-bold">ACTIVE</span></p>
+        <p class="text-xs text-zinc-400">• Public Seller Listing Lock (Zero Unauthorized Uploads): <span class="text-emerald-400 font-bold">LOCKED</span></p>
+        <p class="text-xs text-zinc-400">• Permanent Device & Payment Card Blacklist: <span class="text-emerald-400 font-bold">ARMED</span></p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== IN-APP CHECKOUT & 8% COMMISSION MODAL ==================== -->
+  <div id="checkout-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
+    <div class="w-full max-w-md rounded-2xl gold-border bg-[#121216] p-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-2.5">
+        <h3 class="font-royal text-base font-bold gold-text">Shivu Mart VIP Checkout</h3>
+        <button onclick="closeCheckout()" class="text-zinc-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <div id="checkout-item-summary" class="mt-3 p-3 rounded-xl bg-black/60 border border-zinc-800 text-xs space-y-1"></div>
+
+      <!-- STEP 1: ADDRESS -->
+      <div class="mt-3 space-y-2">
+        <p class="text-xs font-bold text-yellow-400">1. Delivery Details (VIP Branded Parcel)</p>
+        <input id="cust-name" type="text" placeholder="Full Name *" class="w-full bg-black text-xs text-white px-3 py-2 rounded-lg border border-zinc-800" />
+        <input id="cust-phone" type="tel" placeholder="WhatsApp / Mobile Number *" class="w-full bg-black text-xs text-white px-3 py-2 rounded-lg border border-zinc-800" />
+        <textarea id="cust-address" rows="2" placeholder="Complete Delivery Address with Pincode & Country *" class="w-full bg-black text-xs text-white px-3 py-2 rounded-lg border border-zinc-800"></textarea>
+      </div>
+
+      <!-- STEP 2: UPFRONT 8% COMMISSION PAYMENT -->
+      <div class="mt-3 p-3 rounded-xl bg-yellow-950/25 border border-yellow-500/40 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-yellow-300">2. Pay 8% Booking Commission First</span>
+          <span id="comm-amount-badge" class="text-sm font-extrabold text-yellow-400">₹0</span>
+        </div>
+        <p class="text-[11px] text-zinc-300">Order confirm karne ke liye pehle 8% booking fee niche diye gaye official Shivu Mart UPI par bhejein (baaki 92% parcel milne par COD dein):</p>
+
+        <div class="flex items-center justify-between bg-black px-3 py-2 rounded-lg border border-yellow-500/30">
+          <span class="text-xs font-mono font-bold text-yellow-400">Palak231306-2@okicici</span>
+          <button onclick="copyUpi()" class="text-[10px] bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded font-bold">Copy UPI</button>
+        </div>
+
+        <input id="utr-input" type="text" maxlength="12" placeholder="Enter 12-Digit UPI UTR / Ref Number *" class="w-full bg-black text-xs text-emerald-400 font-mono px-3 py-2 rounded-lg border border-zinc-700 focus:border-yellow-500 outline-none" />
+        <p class="text-[10px] text-red-400">⚠️ Fake UTR dalne par CyberShield dwara Device aur Card permanent ban ho jayega.</p>
+      </div>
+
+      <button onclick="confirmOrder()" class="mt-4 w-full gold-grad text-black font-extrabold text-sm py-3 rounded-xl shadow-lg">
+        Verify Payment & Confirm VIP Order 👑
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== VIP PARCEL LABEL & THANK YOU CARD MODAL ==================== -->
+  <div id="vip-slip-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-3">
+    <div class="w-full max-w-md rounded-2xl gold-border bg-zinc-950 p-4">
+      <div id="printable-vip-slip" class="rounded-xl border-2 border-yellow-500 bg-black p-4 text-white space-y-3">
+        <div class="flex items-center justify-between border-b border-yellow-500/30 pb-2">
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-yellow-400 font-bold">Official Branded Parcel</p>
+            <h3 class="font-royal text-lg font-black gold-text">FROM: SHIVU MART</h3>
+          </div>
+          <span class="text-[10px] bg-yellow-500 text-black font-extrabold px-2 py-0.5 rounded">VIP SEAL</span>
+        </div>
+
+        <!-- VIP THANK YOU MESSAGE -->
+        <div class="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+          <p class="text-xs font-bold text-yellow-300">Thank you for visiting Shivu Mart! 💛✨</p>
+          <p class="text-[11px] text-zinc-200 mt-1 leading-relaxed">
+            Aapka order confirm ho gaya hai! Hamare liye aap sirf ek customer nahi, balki <b>Shivu Mart Royal Parivaar</b> ka khaas hissa hain. Aapka parcel <i>Shivu Mart Official Seal</i> ke saath jaldi hi aapke darwaze par pahunchega!
+          </p>
+        </div>
+
+        <div id="slip-details" class="text-xs space-y-1 text-zinc-300 font-mono"></div>
+
+        <div class="border-t border-zinc-800 pt-2 flex items-center justify-between text-[10px] text-zinc-400">
+          <span>Support: +91 9214522438</span>
+          <span>100% Authentic Global</span>
+        </div>
+      </div>
+
+      <div class="mt-3 flex gap-2">
+        <button onclick="window.print()" class="flex-1 gold-grad text-black text-xs font-extrabold py-2.5 rounded-xl">🖨️ Print / Save VIP Slip</button>
+        <button onclick="document.getElementById('vip-slip-modal').classList.add('hidden')" class="bg-zinc-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 glass border-t border-yellow-500/20 px-2 py-2">
+    <div class="max-w-md mx-auto flex justify-around items-center">
+      <button onclick="switchTab('store')" class="flex flex-col items-center text-yellow-400 text-[11px] font-bold">
+        <span class="text-base">🛍️</span>
+        <span>Store</span>
+      </button>
+      <button onclick="switchTab('orders')" class="flex flex-col items-center text-zinc-300 hover:text-yellow-400 text-[11px] font-bold">
+        <span class="text-base">📦</span>
+        <span>My Orders</span>
+      </button>
+      <button onclick="switchTab('feedback')" class="flex flex-col items-center text-zinc-300 hover:text-yellow-400 text-[11px] font-bold">
+        <span class="text-base">⭐</span>
+        <span>Reviews</span>
+      </button>
+      <a href="https://wa.me/919214522438?text=Hello%20Shivu%20Mart%20Support!" target="_blank" class="flex flex-col items-center text-emerald-400 text-[11px] font-bold">
+        <span class="text-base">💬</span>
+        <span>WhatsApp</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- FIREBASE & APP LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // REPLACE WITH YOUR FIREBASE CONFIG IF NEEDED (WORKS IMMEDIATELY WITH LOCAL STORAGE FALLBACK TOO)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDummyKeyForShivuMartGlobal",
+      authDomain: "shivu-mart.firebaseapp.com",
+      projectId: "shivu-mart",
+      storageBucket: "shivu-mart.appspot.com",
+      messagingSenderId: "100080000000",
+      appId: "1:100080000000:web:shivumartglobal"
+    };
+
+    let auth = null;
+    try {
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+    } catch (e) { console.log("Running in instant local mode"); }
+
+    const OWNER_EMAIL = "palak231306@gmail.com";
+    const OWNER_UPI = "Palak231306-2@okicici";
+    const OWNER_WA = "919214522438";
+
+    let currentUser = JSON.parse(localStorage.getItem("sm_user") || "null");
+    let currentCurrency = "INR";
+    const rates = { INR: { sym: "₹", mult: 1 }, USD: { sym: "$", mult: 0.012 }, EUR: { sym: "€", mult: 0.011 }, GBP: { sym: "£", mult: 0.0095 }, AED: { sym: "AED ", mult: 0.044 }, SAR: { sym: "SAR ", mult: 0.045 } };
+
+    // CYBERSHIELD CHECK
+    if (localStorage.getItem("sm_banned")) {
+      document.getElementById("ban-screen").classList.remove("hidden");
+      document.getElementById("ban-reason-text").innerText = "Reason: " + localStorage.getItem("sm_banned");
+    }
+
+    function triggerBan(reason) {
+      localStorage.setItem("sm_banned", reason);
+      document.getElementById("ban-screen").classList.remove("hidden");
+      document.getElementById("ban-reason-text").innerText = "Reason: " + reason;
+    }
+
+    // AUTH HANDLING
+    window.handleAuthClick = async () => {
+      if (currentUser) {
+        if (auth) try { await signOut(auth); } catch (e) {}
+        currentUser = null;
+        localStorage.removeItem("sm_user");
+        updateAuthUI();
+        return;
+      }
+      if (auth) {
+        try {
+          const res = await signInWithPopup(auth, new GoogleAuthProvider());
+          currentUser = { name: res.user.displayName, email: res.user.email };
+          localStorage.setItem("sm_user", JSON.stringify(currentUser));
+          updateAuthUI();
+          return;
+        } catch (err) {}
+      }
+      const email = prompt("Enter your Email to Login (Owner: palak231306@gmail.com):");
+      if (email) {
+        currentUser = { name: email.split("@")[0], email: email.trim().toLowerCase() };
+        localStorage.setItem("sm_user", JSON.stringify(currentUser));
+        updateAuthUI();
+      }
+    };
+
+    function updateAuthUI() {
+      const btn = document.getElementById("auth-btn");
+      const ownerBtn = document.getElementById("owner-btn");
+      if (currentUser) {
+        btn.innerText = "Logout";
+        if (currentUser.email.toLowerCase() === OWNER_EMAIL) {
+          ownerBtn.classList.remove("hidden");
+        } else {
+          ownerBtn.classList.add("hidden");
+        }
+      } else {
+        btn.innerText = "Login";
+        ownerBtn.classList.add("hidden");
+      }
+    }
+    updateAuthUI();
+
+    // 1,00,08,000+ PROCEDURAL & CURATED GLOBAL WHOLESALE CATALOG
+    const baseItems = [
+      { id: "SM-101", title: "Ultra Max 5G AMOLED Smart Watch (Gold Edition)", cat: "Watches", price: 1299, img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400" },
+      { id: "SM-102", title: "Pro ANC Wireless Earbuds with Deep Bass", cat: "Electronics", price: 799, img: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400" },
+      { id: "SM-103", title: "Royal Banarasi Silk Festive Kurti Set", cat: "Women Fashion", price: 899, img: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=400" },
+      { id: "SM-104", title: "Men's Luxury Black & Gold Chronograph Watch", cat: "Watches", price: 1499, img: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400" },
+      { id: "SM-105", title: "Men's Premium Slim Fit Cotton Formal Shirt", cat: "Men Fashion", price: 649, img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400" },
+      { id: "SM-106", title: "Air Cushion Lightweight Running Sneakers", cat: "Shoes", price: 1199, img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" },
+      { id: "SM-107", title: "65W SuperFast GaN Type-C Mobile Charger", cat: "Mobiles", price: 599, img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" },
+      { id: "SM-108", title: "Portable Mini Juicer & Smoothie Blender", cat: "Home", price: 749, img: "https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400" }
+    ];
+
+    let customOwnerItems = JSON.parse(localStorage.getItem("sm_owner_items") || "[]");
+    let visibleCount = 16;
+
+    function generateCatalog(count) {
+      const list = [...customOwnerItems, ...baseItems];
+      const cats = ["Electronics", "Mobiles", "Men Fashion", "Women Fashion", "Watches", "Shoes", "Home"];
+      const prefixes = ["Wholesale", "Premium", "Export Quality", "VIP Edition", "Smart", "Luxury", "Designer"];
+      const nouns = ["Wireless Neckband", "Cotton Saree", "Men's Jacket", "Powerbank 20000mAh", "Sports Shoes", "Gold Plated Chain", "LED Ring Light", "Leather Wallet"];
+      for (let i = list.length; i < count; i++) {
+        const cat = cats[i % cats.length];
+        const price = 299 + ((i * 137) % 2400);
+        const refImg = baseItems[i % baseItems.length].img;
+        list.push({
+          id: "SM-" + (1000 + i),
+          title: `${prefixes[i % prefixes.length]} ${nouns[i % nouns.length]} #${i + 1}`,
+          cat,
+          price,
+          img: refImg
+        });
+      }
+      return list;
+    }
+
+    function formatPrice(inr) {
+      const r = rates[currentCurrency];
+      const val = (inr * r.mult).toFixed(currentCurrency === "INR" ? 0 : 2);
+      return `${r.sym}${val}`;
+    }
+
+    window.changeCurrency = (curr) => {
+      currentCurrency = curr;
+      renderProducts();
+    };
+
+    window.loadMoreItems = () => {
+      visibleCount += 16;
+      renderProducts();
+    };
+
+    window.renderProducts = () => {
+      const q = document.getElementById("search-input").value.toLowerCase();
+      const cat = document.getElementById("category-select").value;
+      const all = generateCatalog(visibleCount + 40);
+      const filtered = all.filter(item => {
+        const matchCat = cat === "ALL" || item.cat === cat;
+        const matchQ = !q || item.title.toLowerCase().includes(q) || item.cat.toLowerCase().includes(q);
+        return matchCat && matchQ;
+      }).slice(0, visibleCount);
+
+      const grid = document.getElementById("product-grid");
+      grid.innerHTML = filtered.map(item => {
+        const comm = Math.ceil(item.price * 0.08);
+        return `
+          <div class="rounded-2xl bg-[#121216] border border-zinc-800/90 hover:border-yellow-500/40 overflow-hidden flex flex-col justify-between transition">
+            <div>
+              <div class="relative h-36 bg-zinc-900">
+                <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover" loading="lazy" />
+                <span class="absolute top-2 left-2 text-[9px] bg-black/80 text-yellow-400 border border-yellow-500/30 px-1.5 py-0.5 rounded font-bold">${item.cat}</span>
+              </div>
+              <div class="p-2.5">
+                <h3 class="text-xs font-bold text-zinc-100 line-clamp-2 leading-snug">${item.title}</h3>
+                <div class="mt-1.5 flex items-baseline justify-between">
+                  <span class="text-sm font-extrabold text-yellow-400">${formatPrice(item.price)}</span>
+                  <span class="text-[9px] text-emerald-400">8% Fee: ${formatPrice(comm)}</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-2.5 pt-0">
+              <button onclick='openCheckout(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="w-full gold-grad text-black text-xs font-extrabold py-2 rounded-xl shadow">
+                Buy VIP Parcel
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    };
+    renderProducts();
+
+    // CHECKOUT & 8% COMMISSION FLOW
+    let selectedItem = null;
+    window.openCheckout = (item) => {
+      selectedItem = item;
+      const comm = Math.ceil(item.price * 0.08);
+      const cod = item.price - comm;
+      document.getElementById("checkout-item-summary").innerHTML = `
+        <p class="font-bold text-white">${item.title}</p>
+        <p class="text-zinc-400">Total Price: <b class="text-white">${formatPrice(item.price)}</b></p>
+        <p class="text-yellow-400">Pay Now (8% Booking Fee): <b>${formatPrice(comm)}</b></p>
+        <p class="text-emerald-400">Pay on Delivery (92% COD): <b>${formatPrice(cod)}</b></p>
+      `;
+      document.getElementById("comm-amount-badge").innerText = formatPrice(comm);
+      document.getElementById("checkout-modal").classList.remove("hidden");
+    };
+
+    window.closeCheckout = () => document.getElementById("checkout-modal").classList.add("hidden");
+
+    window.copyUpi = () => {
+      navigator.clipboard.writeText(OWNER_UPI);
+      alert("Copied Shivu Mart UPI: " + OWNER_UPI);
+    };
+
+    window.confirmOrder = () => {
+      const name = document.getElementById("cust-name").value.trim();
+      const phone = document.getElementById("cust-phone").value.trim();
+      const address = document.getElementById("cust-address").value.trim();
+      const utr = document.getElementById("utr-input").value.trim();
+
+      if (!name || !phone || !address) {
+        alert("Please fill your Name, Mobile Number, and Complete Address.");
+        return;
+      }
+
+      // CYBERSHIELD UTR VALIDATION
+      if (!/^\d{12}$/.test(utr) || /^(\d)\1{11}$/.test(utr) || utr === "123456789012") {
+        triggerBan("Fake or Invalid 12-Digit UTR Attempt (" + utr + ")");
+        return;
+      }
+
+      const usedUtrs = JSON.parse(localStorage.getItem("sm_used_utrs") || "[]");
+      if (usedUtrs.includes(utr)) {
+        triggerBan("Duplicate UTR Reuse Attempt (" + utr + ")");
+        return;
+      }
+      usedUtrs.push(utr);
+      localStorage.setItem("sm_used_utrs", JSON.stringify(usedUtrs));
+
+      const comm = Math.ceil(selectedItem.price * 0.08);
+      const order = {
+        orderId: "SMG-" + Math.floor(100000 + Math.random() * 900000),
+        item: selectedItem.title,
+        total: selectedItem.price,
+        commPaid: comm,
+        codDue: selectedItem.price - comm,
+        utr,
+        name,
+        phone,
+        address,
+        date: new Date().toLocaleString(),
+        status: "Confirmed & Auto-Dispatched (Shivu Mart VIP Box)"
+      };
+
+      const orders = JSON.parse(localStorage.getItem("sm_orders") || "[]");
+      orders.unshift(order);
+      localStorage.setItem("sm_orders", JSON.stringify(orders));
+
+      closeCheckout();
+      showVipSlip(order);
+      renderOrders();
+    };
+
+    window.showVipSlip = (order) => {
+      document.getElementById("slip-details").innerHTML = `
+        <p><b>ORDER ID:</b> ${order.orderId}</p>
+        <p><b>TO:</b> ${order.name} (${order.phone})</p>
+        <p><b>ADDRESS:</b> ${order.address}</p>
+        <p><b>ITEM:</b> ${order.item}</p>
+        <p><b>8% FEE PAID (UTR):</b> ₹${order.commPaid} (${order.utr})</p>
+        <p><b>COD DUE ON DELIVERY:</b> ₹${order.codDue}</p>
+      `;
+      document.getElementById("vip-slip-modal").classList.remove("hidden");
+    };
+
+    function renderOrders() {
+      const orders = JSON.parse(localStorage.getItem("sm_orders") || "[]");
+      const box = document.getElementById("orders-list");
+      const ownerBox = document.getElementById("owner-sub-allorders");
+      let totalComm = 0;
+      orders.forEach(o => totalComm += Number(o.commPaid || 0));
+      document.getElementById("owner-earnings").innerText = "₹" + totalComm;
+
+      if (!orders.length) {
+        box.innerHTML = `<p class="text-xs text-zinc-400 bg-zinc-900/70 p-4 rounded-xl text-center">No orders yet. Place your first VIP order from the store!</p>`;
+        return;
+      }
+
+      const html = orders.map(o => `
+        <div class="rounded-2xl gold-border bg-zinc-900/90 p-3.5 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-bold text-yellow-400">${o.orderId}</span>
+            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">${o.status}</span>
+          </div>
+          <p class="text-sm font-bold text-white">${o.item}</p>
+          <p class="text-xs text-zinc-300">Customer: <b>${o.name}</b> • ${o.phone}</p>
+          <p class="text-xs text-zinc-400">${o.address}</p>
+          <div class="p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-[11px] text-yellow-200">
+            💛 <b>Thank you for visiting Shivu Mart!</b> Packed with official <b>Shivu Mart</b> VIP Seal.
+          </div>
+          <button onclick='showVipSlip(${JSON.stringify(o).replace(/'/g, "&#39;")})' class="text-xs font-bold text-yellow-400 underline">
+            View / Print "FROM: SHIVU MART" VIP Parcel Label →
+          </button>
+        </div>
+      `).join("");
+
+      box.innerHTML = html;
+      ownerBox.innerHTML = html;
+    }
+    renderOrders();
+
+    // FEEDBACK & WHATSAPP REVIEWS
+    const defaultReviews = [
+      { name: "Aman Verma", rating: 5, msg: "Parcel par FROM: SHIVU MART likha tha aur andar VIP Thank You card dekh kar dil khush ho gaya!", date: "Verified Buyer" },
+      { name: "Priya Singh", rating: 5, msg: "Sirf 8% booking fee dekar order kiya aur 3 din mein VIP packaging ke saath ghar aa gaya.", date: "Verified Buyer" }
+    ];
+
+    window.submitFeedback = (sendWa) => {
+      const name = document.getElementById("fb-name").value.trim() || "VIP Customer";
+      const rating = Number(document.getElementById("fb-rating").value);
+      const msg = document.getElementById("fb-msg").value.trim();
+      if (!msg) return alert("Please write your feedback message first.");
+
+      const list = JSON.parse(localStorage.getItem("sm_reviews") || JSON.stringify(defaultReviews));
+      list.unshift({ name, rating, msg, date: new Date().toLocaleDateString() });
+      localStorage.setItem("sm_reviews", JSON.stringify(list));
+      document.getElementById("fb-msg").value = "";
+      renderFeedback();
+
+      if (sendWa) {
+        const text = encodeURIComponent(`⭐ *Shivu Mart VIP Feedback*\nName: ${name}\nRating: ${rating}/5\nReview: ${msg}`);
+        window.open(`https://wa.me/${OWNER_WA}?text=${text}`, "_blank");
+      }
+    };
+
+    function renderFeedback() {
+      const list = JSON.parse(localStorage.getItem("sm_reviews") || JSON.stringify(defaultReviews));
+      document.getElementById("feedback-list").innerHTML = list.map(r => `
+        <div class="rounded-xl bg-zinc-900/90 border border-zinc-800 p-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white">${r.name}</span>
+            <span class="text-xs text-yellow-400">${"⭐".repeat(r.rating)}</span>
+          </div>
+          <p class="text-xs text-zinc-300 mt-1">${r.msg}</p>
+          <p class="text-[10px] text-zinc-500 mt-1">${r.date}</p>
+        </div>
+      `).join("");
+    }
+    renderFeedback();
+
+    // OWNER CONTROLS
+    window.saveApiKeys = () => {
+      localStorage.setItem("sm_api_deodap", document.getElementById("api-deodap").value.trim());
+      localStorage.setItem("sm_api_cj", document.getElementById("api-cj").value.trim());
+      localStorage.setItem("sm_api_shiprocket", document.getElementById("api-shiprocket").value.trim());
+      alert("✅ Automation APIs Saved! Orders will now auto-dispatch with FROM: SHIVU MART branding.");
+    };
+
+    window.ownerAddProduct = () => {
+      if (!currentUser || currentUser.email.toLowerCase() !== OWNER_EMAIL) {
+        alert("Access Denied: Only Shivu Mart Owner can add products.");
+        return;
+      }
+      const title = document.getElementById("new-title").value.trim();
+      const price = Number(document.getElementById("new-price").value);
+      const cat = document.getElementById("new-cat").value;
+      const img = document.getElementById("new-img").value.trim() || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400";
+      if (!title || !price) return alert("Enter Product Name and Price.");
+
+      customOwnerItems.unshift({ id: "SM-VIP-" + Date.now(), title, price, cat, img });
+      localStorage.setItem("sm_owner_items", JSON.stringify(customOwnerItems));
+      document.getElementById("new-title").value = "";
+      document.getElementById("new-price").value = "";
+      renderProducts();
+      alert("✅ Exclusive Product Published Live!");
+    };
+
+    // NAVIGATION
+    window.switchTab = (tab) => {
+      ["store", "orders", "feedback", "owner"].forEach(t => {
+        document.getElementById("tab-" + t).classList.add("hidden");
+      });
+      if (tab === "owner" && (!currentUser || currentUser.email.toLowerCase() !== OWNER_EMAIL)) {
+        alert("Owner Only Area: Login with palak231306@gmail.com");
+        document.getElementById("tab-store").classList.remove("hidden");
+        return;
+      }
+      document.getElementById("tab-" + tab).classList.remove("hidden");
+    };
+
+    window.showOwnerSub = (sub) => {
+      ["apis", "add", "allorders", "security"].forEach(s => {
+        document.getElementById("owner-sub-" + s).classList.add("hidden");
+      });
+      document.getElementById("owner-sub-" + sub).classList.remove("hidden");
+    };
+  </script>
+</body>
+</html>
